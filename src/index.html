@@ -765,24 +765,23 @@
         // }
 
     window.addEventListener('message', async function handleMessage(event) {
-        event.source?.postMessage('received!');
-        const did = event.data.did
-            try {
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        did
-                    })
-                });
-                const data = await response.json();
-                localStorage.setItem('handle', data.handle)
-                showGreeting()
-            } catch (error) {
-                console.error('Error getting session:', error);
-            }
+        const did = event.data
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    did
+                })
+            });
+            const data = await response.json();
+            localStorage.setItem('handle', data.handle)
+            showGreeting()
+        } catch (error) {
+            console.error('Error getting session:', error);
+        }
     });
 
 
