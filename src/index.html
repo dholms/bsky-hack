@@ -745,7 +745,28 @@
             greeting.innerHTML = `hey @${handle} 👋`
         }
 
-        async function login() {
+        // async function login() {
+        //     try {
+        //         const response = await fetch('/login', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json'
+        //             },
+        //             body: JSON.stringify({
+        //                 did: "did:plc:yk4dd2qkboz2yv6tpubpc6co"
+        //             })
+        //         });
+        //         const data = await response.json();
+        //         localStorage.setItem('handle', data.handle)
+        //         showGreeting()
+        //     } catch (error) {
+        //         console.error('Error getting session:', error);
+        //     }
+        // }
+
+    window.addEventListener('message', async function handleMessage(event) {
+        event.source?.postMessage('received!');
+        const did = event.data.clone
             try {
                 const response = await fetch('/login', {
                     method: 'POST',
@@ -753,7 +774,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        did: "did:plc:yk4dd2qkboz2yv6tpubpc6co"
+                        did
                     })
                 });
                 const data = await response.json();
@@ -762,7 +783,8 @@
             } catch (error) {
                 console.error('Error getting session:', error);
             }
-        }
+    });
+
 
       document.addEventListener('DOMContentLoaded', function() {
           login()
