@@ -766,7 +766,7 @@
 
     window.addEventListener('message', async function handleMessage(event) {
         event.source?.postMessage('received!');
-        const did = event.data.clone
+        const did = event.data.did
             try {
                 const response = await fetch('/login', {
                     method: 'POST',
@@ -787,7 +787,7 @@
 
 
       document.addEventListener('DOMContentLoaded', function() {
-          login()
+        //   login()
 
           const canvas = document.getElementById('doodleCanvas');
           const ctx = canvas.getContext('2d');
