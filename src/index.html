@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --color-primary: #4A5AF9;
+            --color-secondary: #FF5D3E;
+            --color-accent: #FFB344;
+            --color-pop: #2AC885;
+            --color-soft: #2B3252;
+            --color-bg: #1E1E2E;
+            --color-text: #E9EAFC;
+            --color-muted: #9DA3B6;
+            --spacing-sm: 12px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            background-image: 
+                radial-gradient(circle at 100% 0%, rgba(74, 90, 249, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(255, 93, 62, 0.2) 0%, transparent 50%);
+            color: var(--color-text);
+            font-family: 'Space Mono', monospace;
+            line-height: 1.6;
+            padding: var(--spacing-sm);
+            min-height: 100vh;
+        }
+
+        a:link {
+            text-decoration: inherit;
+            color: inherit;
+        }
+
+        a:visited {
+            text-decoration: inherit;
+            color: inherit;
+        }
+
+
+        .profile-container {
+            background-color: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(74, 90, 249, 0.3);
+            border-radius: 16px;
+            padding: var(--spacing-md);
+            max-width: 100%;
+            margin: 0 auto;
+            box-shadow: 6px 6px 0 rgba(74, 90, 249, 0.2);
+        }
+
+        .profile-header {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid rgba(74, 90, 249, 0.3);
+            padding-bottom: var(--spacing-lg);
+        }
+
+        .profile-pic {
+            width: 140px;
+            height: 140px;
+            border-radius: 71% 29% 70% 30% / 30% 73% 27% 70%;
+            border: 3px solid var(--color-primary);
+            box-shadow: 
+                6px 6px 0 rgba(74, 90, 249, 0.3),
+                -6px -6px 0 rgba(255, 93, 62, 0.3);
+            transform: rotate(-3deg);
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
+        .username-text {
+            color: var(--color-text);
+            font-weight: 700;
+            font-size: 1.75em;
+            letter-spacing: -0.5px;
+            margin-bottom: var(--spacing-sm);
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+        }
+
+        .bio-text {
+            color: var(--color-muted);
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95em;
+            font-family: system-ui, sans-serif;
+        }
+
+        .status-box {
+            background: linear-gradient(135deg, rgba(74, 90, 249, 0.1), rgba(255, 93, 62, 0.1));
+            border: 1px solid rgba(74, 90, 249, 0.2);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+            width: 100%;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9em;
+            color: var(--color-pop);
+            margin-bottom: var(--spacing-sm);
+            font-family: system-ui, sans-serif;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--color-pop);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .tag {
+            background: var(--color-secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            font-family: 'Space Mono', monospace;
+            transform: rotate(-1deg);
+        }
+
+        .tag:nth-child(2n) {
+            background: var(--color-primary);
+            transform: rotate(1deg);
+        }
+
+        .tag:nth-child(3n) {
+            background: var(--color-pop);
+            transform: rotate(-2deg);
+        }
+
+        .greeting {
+            display: none;
+            text-align: center;
+        }
+
+        .greeting.visible {
+            display: block
+        }
+
+        .friends-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(74, 90, 249, 0.3);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .friends-section h3 {
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.2em;
+            font-family: 'Space Mono', monospace;
+            color: var(--color-accent);
+            display: inline-block;
+            transform: rotate(-1deg);
+        }
+
+        .friends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .friend-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(74, 90, 249, 0.2);
+            border-radius: 8px;
+            padding: var(--spacing-sm);
+            text-align: center;
+            transform: rotate(-1deg);
+            transition: all 0.2s ease;
+        }
+
+        .friend-card:nth-child(2n) {
+            transform: rotate(1deg);
+        }
+
+        .friend-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
+            border: 2px solid var(--color-pop);
+            margin: 0 auto var(--spacing-sm);
+        }
+
+        .friend-name {
+            font-size: 0.9em;
+            color: var(--color-text);
+            margin-bottom: 4px;
+            font-family: system-ui, sans-serif;
+        }
+
+        .friend-status {
+            font-size: 0.8em;
+            color: var(--color-muted);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .bangers-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(74, 90, 249, 0.3);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .bangers-section h3 {
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.2em;
+            font-family: 'Space Mono', monospace;
+            color: var(--color-secondary);
+            display: inline-block;
+            transform: rotate(-1deg);
+        }
+
+        .banger-card {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(74, 90, 249, 0.2);
+            border-radius: 8px;
+            margin-bottom: var(--spacing-md);
+            transform: rotate(-0.5deg);
+        }
+
+        .update-icon {
+            background: var(--color-soft);
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            transform: rotate(-3deg);
+        }
+
+        .update-content {
+            flex-grow: 1;
+            font-family: system-ui, sans-serif;
+        }
+
+        .banger-image {
+            width: 100%;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(74, 90, 249, 0.2);
+        }
+
+        .banger-stats {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            font-family: 'Space Mono', monospace;
+            color: var(--color-muted);
+            font-size: 0.85em;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mood-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .mood-item {
+            aspect-ratio: 1;
+            background: var(--color-soft);
+            border-radius: 8px;
+            overflow: hidden;
+            transform: rotate(-1deg);
+            border: 2px solid rgba(74, 90, 249, 0.2);
+        }
+
+        .mood-item:nth-child(2n) {
+            transform: rotate(1deg);
+        }
+
+        .mood-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .divider {
+            border: none;
+            height: 6px;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(74, 90, 249, 0.2),
+                rgba(74, 90, 249, 0.2) 10px,
+                transparent 10px,
+                transparent 20px
+            );
+            margin: var(--spacing-lg) 0;
+            border-radius: 2px;
+            transform: rotate(-0.5deg);
+        }
+
+        .visitor-counter {
+            text-align: center;
+            color: var(--color-muted);
+            font-size: 0.9em;
+            font-family: 'Space Mono', monospace;
+            transform: rotate(-1deg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .visitor-counter p:last-child {
+            color: var(--color-primary);
+            letter-spacing: 4px;
+        }
+
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .profile-pic {
+                width: 120px;
+                height: 120px;
+            }
+
+            .status-indicator {
+                justify-content: center;
+            }
+
+            .friends-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: var(--spacing-lg);
+            }
+
+            .profile-container {
+                padding: var(--spacing-lg);
+                max-width: 800px;
+            }
+        }
+
+        @media (hover: hover) {
+            .friend-card:hover {
+                transform: translateY(-4px) rotate(-2deg);
+                border-color: var(--color-pop);
+            }
+
+            .banger-card:hover {
+                transform: translateY(-2px) rotate(-1deg);
+                border-color: var(--color-secondary);
+            }
+
+            .tag:hover {
+                transform: translateY(-2px) rotate(-3deg);
+                background: var(--color-pop);
+                transition: all 0.2s ease;
+            }
+        }
+
+        /* DOODLE SECTION */
+
+        .doodle-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(74, 90, 249, 0.3);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .doodle-section h3 {
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.2em;
+            font-family: 'Space Mono', monospace;
+            color: var(--color-accent);
+            display: inline-block;
+            transform: rotate(-1deg);
+        }
+
+        .doodle-container {
+            display: none;
+            position: relative;
+            background: rgb(252, 249, 244);
+            border: 1px solid rgba(74, 90, 249, 0.2);
+            border-radius: 8px;
+            padding: var(--spacing-sm);
+            transform: rotate(-1deg);
+            box-shadow: 4px 4px 0 rgba(74, 90, 249, 0.2);
+        }
+
+        .doodle-container.active {
+          display: block;
+        }
+
+        .doodle-canvas {
+            width: 100%;
+            height: 300px;
+            background: rgb(252, 249, 244);
+            border-radius: 4px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .doodle-toggle {
+            display: none;
+            background: var(--color-primary);
+            color: var(--color-text);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            cursor: pointer;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: var(--spacing-md);
+            transform: rotate(-1deg);
+            transition: all 0.2s ease;
+        }
+
+        .doodle-toggle.active {
+          display: flex;
+        }
+
+        .doodle-toggle:hover {
+            transform: translateY(-2px) rotate(-1deg);
+            background: var(--color-pop);
+        }
+
+        .doodle-toggle span {
+            transition: transform 0.3s ease;
+        }
+
+        .doodle-tools {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            padding-top: var(--spacing-sm);
+            border-top: 1px dashed rgba(74, 90, 249, 0.2);
+        }
+
+        .tool-button {
+            background: var(--color-soft);
+            border: none;
+            color: var(--color-text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transform: rotate(-1deg);
+            transition: all 0.2s ease;
+        }
+
+        .tool-button:nth-child(2n) {
+            transform: rotate(1deg);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(74, 90, 249, 0.2);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .color-option.active {
+            transform: scale(1.2);
+            border-color: var(--color-primary);
+        }
+
+        .doodle-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .doodle-note {
+            background: rgb(252, 249, 244);
+            border: 1px solid rgba(74, 90, 249, 0.2);
+            border-radius: 8px;
+            padding: var(--spacing-sm);
+            transform: rotate(-1deg);
+            min-width: 100px;
+            max-width: 150px;
+            justify-self: center;
+            width: 100%;
+            height: fit-content;
+        }
+
+        .doodle-note img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 4px;
+            display: block; /* Remove any default spacing */
+        }
+
+        .doodle-note:nth-child(2n) {
+            transform: rotate(1deg);
+        }
+
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--color-muted);
+            font-size: 0.7em;
+            font-family: 'Space Mono', monospace;
+            margin-top: var(--spacing-sm);
+            padding-top: var(--spacing-sm);
+            border-top: 1px dashed rgba(74, 90, 249, 0.2);
+            overflow: hidden;
+        }
+
+        .note-meta span {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        /* Add media query for larger screens to maintain grid density */
+        @media (min-width: 768px) {
+          .doodle-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .doodle-note {
+        /* Slightly larger on desktop */
+        padding: var(--spacing-md);
+    }
+
+    .note-meta {
+        font-size: 0.8em;
+    }
+        }
+
+        @media (hover: hover) {
+            .tool-button:hover {
+                transform: translateY(-2px);
+                background: var(--color-pop);
+            }
+
+            .color-option:hover {
+                transform: scale(1.2);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .doodle-tools {
+                flex-wrap: wrap;
+            }
+
+            .color-picker {
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+                margin-top: var(--spacing-sm);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Previous profile header remains the same -->
+        <div class="profile-header">
+            <a href="https://bsky.app/profile/dholms.xyz">
+                <img src="https://cdn.bsky.app/img/avatar/plain/did:plc:yk4dd2qkboz2yv6tpubpc6co/bafkreidc5amuohqqhturw5xeuswgtyrywkpn4z4v7zwbk4f6cdshl5c2ne@jpeg" alt="Profile Picture" class="profile-pic">
+            </a>
+            <div class="profile-info">
+                <h1 class="username-text">dholms.xyz 🫠</h1>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    cruisin the atmosphere
+                </div>
+                <p class="bio-text">
+                    protocol dreaming // atmosphere optimist // 
+                    bsky team 🌅 
+                </p>
+                <div class="status-box">
+                    <div class="tags-container">
+                        <a href="https://bsky.app/hashtag/atproto" class="tag">#atproto</a>
+                        <a href="https://bsky.app/hashtag/dev" class="tag">#dev</a>
+                        <a href="https://bsky.app/hashtag/bluesky" class="tag">#bluesky</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="greeting"></div>
+
+        <div class="friends-section">
+            <h3>the crew 😎</h3>
+            <div class="friends-grid">
+                <a href="https://bsky.app/profile/haileyok.com">
+                    <div class="friend-card">
+                        <img src="https://cdn.bsky.app/img/avatar/plain/did:plc:oisofpd7lj26yvgiivf3lxsi/bafkreibzqdxd6ic2osjlzwypynv3mp3alhh2idmh3et7ips4uavcjucy5y@jpeg" alt="Hailey" class="friend-pic">
+                        <div class="friend-name">haileyok.com</div>
+                        <div class="friend-status">partner in crime</div>
+                    </div>
+                </a>
+                <a href="https://bsky.app/profile/pfrazee.com">
+                    <div class="friend-card">
+                        <img src="https://cdn.bsky.app/img/avatar/plain/did:plc:ragtjsm2j2vknwkz3zp4oxrd/bafkreicargk4unjh2ncmooytvow5huic2neiffaw63ile7ntznsfbezs5q@jpeg" alt="Paul" class="friend-pic">
+                        <div class="friend-name">pfrazee.com</div>
+                        <div class="friend-status">arch nemesis</div>
+                    </div>
+                </a>
+                <a href="https://bsky.app/profile/divy.zone">
+                    <div class="friend-card">
+                        <img src="https://cdn.bsky.app/img/avatar/plain/did:plc:l3rouwludahu3ui3bt66mfvj/bafkreicg6y3mlr3eszmbjm3swyuncwf4ruzohcsvtcbrjzyhkwibtx7nyy@jpeg" alt="Devin" class="friend-pic">
+                        <div class="friend-name">divy.zone</div>
+                        <div class="friend-status">the viber</div>
+                    </div>
+                </a>
+                <a href="https://bsky.app/profile/jay.bsky.team">
+                    <div class="friend-card">
+                        <img src="https://cdn.bsky.app/img/avatar/plain/did:plc:oky5czdrnfjpqslsw2a5iclo/bafkreihidru2xruxdxlvvcixc7lbgoudzicjbrdgacdhdhxyfw4yut4nfq@jpeg" alt="Jay" class="friend-pic">
+                        <div class="friend-name">jay.bsky.team</div>
+                        <div class="friend-status">ring leader</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="bangers-section">
+            <h3>hall of fame 🔥</h3>
+            <a href="https://bsky.app/profile/dholms.xyz/post/3l6skpntgn22c">
+                <div class="banger-card">
+                    <div class="update-content">
+                        <img class="banger-image" src="https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:yk4dd2qkboz2yv6tpubpc6co/bafkreid4nlkqmw5pcbvk3467jqdbdthm4crz3esfmv7xl75w2eqrvvdnpa@jpeg" />
+                        <p>butterfly v tapeworm who will win?</p>
+                        <div class="banger-stats">
+                            <span class="stat">🔥 2.5k</span>
+                            <span class="stat">💭 61</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <a href="https://bsky.app/profile/dholms.xyz/post/3jzo7hfrelw2v">
+                <div class="banger-card">
+                    <div class="update-content">
+                        <img class="banger-image" src="https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:yk4dd2qkboz2yv6tpubpc6co/bafkreih7nnso66b6pj6dr2qwbskrnei5eg6jb4hygjb7fdkn5fgnywhyjy@jpeg" />
+                        <p>backend team after keeping the servers online the last 3 days</p>
+                        <div class="banger-stats">
+                            <span class="stat">🔥 1.2k</span>
+                            <span class="stat">💭 26</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="doodle-section">
+          <h3>messages from friends ️💙</h3>
+
+          <button class="doodle-toggle active">
+            <span>leave a note 💌</span>
+          </button>
+          
+          <div class="doodle-container">
+              <canvas id="doodleCanvas" class="doodle-canvas"></canvas>
+              
+              <div class="doodle-tools">
+                  <button class="tool-button" id="post-button">
+                      <span>💌</span>
+                      <span>post</span>
+                  </button>
+                  <button class="tool-button" id="clear-button">
+                      <span>🗑️</span>
+                      <span>clear</span>
+                  </button>
+                  <button class="tool-button" id="close-button">
+                      <span>❌</span>
+                      <span>close</span>
+                  </button>
+                  <div class="color-picker">
+                      <div class="color-option active" style="background: #2B3252;"></div>
+                      <div class="color-option" style="background: #EF476F;"></div>
+                      <div class="color-option" style="background: #FFD93D;"></div>
+                      <div class="color-option" style="background: #06D6A0;"></div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="doodle-gallery"></div>
+        </div>
+    <script>
+        function showGreeting() {
+            const handle = localStorage.getItem('handle')
+            if(!handle) return
+            const greeting = document.querySelector('.greeting')
+            greeting.classList.add('visible')
+            greeting.innerHTML = `hey @${handle} 👋`
+        }
+
+        async function login() {
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        did: "did:plc:yk4dd2qkboz2yv6tpubpc6co"
+                    })
+                });
+                const data = await response.json();
+                localStorage.setItem('handle', data.handle)
+                showGreeting()
+            } catch (error) {
+                console.error('Error getting session:', error);
+            }
+        }
+
+      document.addEventListener('DOMContentLoaded', function() {
+          login()
+
+          const canvas = document.getElementById('doodleCanvas');
+          const ctx = canvas.getContext('2d');
+          let isDrawing = false;
+          let currentColor = '#2B3252';
+          let lastX = 0;
+          let lastY = 0;
+
+          // Set canvas size with proper scaling
+          function resizeCanvas() {
+              const container = canvas.parentElement;
+              const dpr = window.devicePixelRatio || 1;
+              const rect = container.getBoundingClientRect();
+              
+              // Set display size (css pixels)
+              canvas.style.width = `${rect.width - 32}px`;
+              canvas.style.height = '300px';
+              
+              // Set actual size in memory (scaled for device DPR)
+              canvas.width = (rect.width - 32) * dpr;
+              canvas.height = 300 * dpr;
+              
+              // Scale context to match device DPR
+              ctx.scale(dpr, dpr);
+              
+              // Set up drawing style
+              ctx.strokeStyle = currentColor;
+              ctx.lineWidth = 2;
+              ctx.lineCap = 'round';
+              ctx.lineJoin = 'round';
+          }
+
+          // Initialize canvas
+          resizeCanvas();
+          window.addEventListener('resize', resizeCanvas);
+
+          function getScaledCoords(e) {
+              const rect = canvas.getBoundingClientRect();
+              const scaleX = canvas.width / rect.width;
+              const scaleY = canvas.height / rect.height;
+              
+              if (e.type.includes('touch')) {
+                  return [
+                      (e.touches[0].clientX - rect.left) * (canvas.width / rect.width / window.devicePixelRatio),
+                      (e.touches[0].clientY - rect.top) * (canvas.height / rect.height / window.devicePixelRatio)
+                  ];
+              }
+              
+              return [
+                  (e.clientX - rect.left) * (canvas.width / rect.width / window.devicePixelRatio),
+                  (e.clientY - rect.top) * (canvas.height / rect.height / window.devicePixelRatio)
+              ];
+          }
+
+          function startDrawing(e) {
+              isDrawing = true;
+              [lastX, lastY] = getScaledCoords(e);
+          }
+
+          function draw(e) {
+              if (!isDrawing) return;
+              e.preventDefault();
+
+              const [currentX, currentY] = getScaledCoords(e);
+
+              ctx.beginPath();
+              ctx.moveTo(lastX, lastY);
+              ctx.lineTo(currentX, currentY);
+              ctx.stroke();
+
+              [lastX, lastY] = [currentX, currentY];
+          }
+
+          function stopDrawing() {
+              isDrawing = false;
+          }
+
+          // Event listeners for mouse
+          canvas.addEventListener('mousedown', startDrawing);
+          canvas.addEventListener('mousemove', draw);
+          canvas.addEventListener('mouseup', stopDrawing);
+          canvas.addEventListener('mouseout', stopDrawing);
+
+          // Event listeners for touch
+          canvas.addEventListener('touchstart', startDrawing);
+          canvas.addEventListener('touchmove', draw);
+          canvas.addEventListener('touchend', stopDrawing);
+
+          loadGallery()
+
+          // Color picker functionality
+          document.querySelectorAll('.color-option').forEach(option => {
+              option.addEventListener('click', function() {
+                  document.querySelector('.color-option.active').classList.remove('active');
+                  this.classList.add('active');
+                  currentColor = getComputedStyle(this).backgroundColor;
+                  ctx.strokeStyle = currentColor;
+              });
+          });
+
+          // open canvas
+          document.querySelector('.doodle-toggle').addEventListener('click', function() {
+            document.querySelector('.doodle-container').classList.add('active')
+            document.querySelector('.doodle-toggle').classList.remove('active')
+            resizeCanvas()
+          });
+
+          // close canvas
+          document.querySelector('#close-button').addEventListener('click', function() {
+            document.querySelector('.doodle-container').classList.remove('active')
+            document.querySelector('.doodle-toggle').classList.add('active')
+          });
+
+          // Post canvas
+          document.querySelector('#post-button').addEventListener('click', function() {
+            saveCanvas()
+          });
+
+          // Clear canvas
+          document.querySelector('#clear-button').addEventListener('click', function() {
+              const dpr = window.devicePixelRatio || 1;
+              ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+          });
+
+          async function saveCanvas() {
+            // Convert canvas to base64 string
+            const dataUrl = canvas.toDataURL('image/png');
+
+            await fetch('/image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: dataUrl })
+            }).catch(err => console.error('upload failed: ', error))
+
+            // Update gallery
+            const ownHandle = localStorage.getItem('handle') ?? ''
+            addToGallery(dataUrl, ownHandle);
+        }
+
+        async function loadGallery() {
+            const response = await fetch('/images')
+            const data = await response.json()
+            for(const doodle of data) {
+                addToGallery(doodle.image, doodle.creator)
+            }
+        }
+
+        function addToGallery(imageUrl, creator) {
+            const gallery = document.querySelector('.doodle-gallery');
+            
+            const doodleNote = document.createElement('div');
+            doodleNote.className = 'doodle-note';
+            
+            doodleNote.innerHTML = `
+                <img src="${imageUrl}" alt="doodle" style="width: 100%; border-radius: 4px;">
+                <div class="note-meta">
+                    <span>@${creator}</span>
+                </div>
+            `;
+            
+            gallery.insertBefore(doodleNote, gallery.firstChild);
+        }
+
+      });
+  </script>
+</body>
+</html>

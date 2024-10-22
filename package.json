@@ -1,0 +1,26 @@
+{
+  "name": "bsky-hack-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx src/bin.ts",
+    "dev": "tsx watch src/bin.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@atproto/api": "^0.13.12",
+    "@atproto/identity": "^0.4.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "iron-session": "^8.0.3",
+    "multer": "1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.8",
+    "tsx": "^4.19.1"
+  }
+}
