@@ -867,27 +867,43 @@
 
           // open canvas
           document.querySelector('.doodle-toggle').addEventListener('click', function() {
-            document.querySelector('.doodle-container').classList.add('active')
-            document.querySelector('.doodle-toggle').classList.remove('active')
+            openCanvas()
             resizeCanvas()
           });
 
           // close canvas
           document.querySelector('#close-button').addEventListener('click', function() {
-            document.querySelector('.doodle-container').classList.remove('active')
-            document.querySelector('.doodle-toggle').classList.add('active')
+            clearCanvas()
+            closeCanvas()
+          });
+
+          // Clear canvas
+          document.querySelector('#clear-button').addEventListener('click', function() {
+            clearCanvas()
           });
 
           // Post canvas
           document.querySelector('#post-button').addEventListener('click', function() {
             saveCanvas()
+            clearCanvas()
+            closeCanvas()
           });
 
-          // Clear canvas
-          document.querySelector('#clear-button').addEventListener('click', function() {
-              const dpr = window.devicePixelRatio || 1;
-              ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
-          });
+          function openCanvas() {
+            document.querySelector('.doodle-container').classList.add('active')
+            document.querySelector('.doodle-toggle').classList.remove('active')
+            resizeCanvas()
+          }
+
+          function closeCanvas() {
+            document.querySelector('.doodle-container').classList.remove('active')
+            document.querySelector('.doodle-toggle').classList.add('active')
+          }
+
+          function clearCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+          }
 
           async function saveCanvas() {
             // Convert canvas to base64 string
