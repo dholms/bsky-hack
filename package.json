@@ -13,6 +13,7 @@
   "dependencies": {
     "@atproto/api": "^0.13.12",
     "@atproto/identity": "^0.4.2",
+    "@atproto/xrpc-server": "^0.7.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "iron-session": "^8.0.3",

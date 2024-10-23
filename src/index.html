@@ -745,27 +745,8 @@
             greeting.innerHTML = `hey @${handle} 👋`
         }
 
-        // async function login() {
-        //     try {
-        //         const response = await fetch('/login', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json'
-        //             },
-        //             body: JSON.stringify({
-        //                 did: "did:plc:yk4dd2qkboz2yv6tpubpc6co"
-        //             })
-        //         });
-        //         const data = await response.json();
-        //         localStorage.setItem('handle', data.handle)
-        //         showGreeting()
-        //     } catch (error) {
-        //         console.error('Error getting session:', error);
-        //     }
-        // }
-
     window.addEventListener('message', async function handleMessage(event) {
-        const did = event.data
+        const jwt = event.data
         try {
             const response = await fetch('/login', {
                 method: 'POST',
@@ -773,7 +754,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    did
+                    jwt
                 })
             });
             const data = await response.json();
@@ -784,10 +765,7 @@
         }
     });
 
-
       document.addEventListener('DOMContentLoaded', function() {
-        //   login()
-
           const canvas = document.getElementById('doodleCanvas');
           const ctx = canvas.getContext('2d');
           let isDrawing = false;

@@ -2,6 +2,8 @@ import express from 'express'
 import { getIronSession } from 'iron-session'
 import { AtpAgent } from '@atproto/api'
 import { HackConfig } from './config'
+import { verifyJwt } from '@atproto/xrpc-server'
+import { IdResolver } from '@atproto/identity'
 
 
 type Session = {
@@ -19,6 +21,7 @@ export const createRoutes = (cfg: HackConfig) => {
   const router = express.Router()
 
   const agent = new AtpAgent({ service: 'https://api.bsky.app' })
+  const idResolver = new IdResolver()
 
   const images: Image[] = []
 
@@ -39,11 +42,15 @@ export const createRoutes = (cfg: HackConfig) => {
   })
 
   router.post('/login', async (req, res) => {
-    const did = req.body.did
-    if(!did) {
+    const jwt = req.body.jwt
+    if(!jwt) {
       res.sendStatus(400)
       return
     }
+    const validatedToken = await verifyJwt(jwt, 'did:web:dholms.com', null, (iss: string) => {
+      return idResolver.did.resolveAtprotoKey(iss)
+    })
+    const did = validatedToken.iss
     const profRes = await agent.app.bsky.actor.getProfile({ actor: did })
     const handle = profRes.data.handle
     const session = await getSession(req, res)
