@@ -442,6 +442,19 @@
             touch-action: none;
         }
 
+        .doodle-unauthed {
+            display: none;
+        }
+
+        .doodle-unauthed.active {
+            display: block;
+        }
+
+        .doodle-unauthed a {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
         .doodle-toggle {
             display: none;
             background: var(--color-primary);
@@ -705,7 +718,11 @@
         <div class="doodle-section">
           <h3>messages from friends ️💙</h3>
 
-          <button class="doodle-toggle active">
+          <div class="doodle-unauthed active">
+            <span>visit through the <a href="https://bsky.app">bsky app</a> leave a note 💌</span>
+          </div>
+
+          <button class="doodle-toggle">
             <span>leave a note 💌</span>
           </button>
           
@@ -737,12 +754,13 @@
           <div class="doodle-gallery"></div>
         </div>
     <script>
-        function showGreeting() {
-            const handle = localStorage.getItem('handle')
-            if(!handle) return
+        function activateForHandle(handle) {
             const greeting = document.querySelector('.greeting')
             greeting.classList.add('visible')
             greeting.innerHTML = `hey @${handle} 👋`
+
+            document.querySelector('.doodle-toggle').classList.add('active')
+            document.querySelector('.doodle-unauthed').classList.remove('active')
         }
 
     window.addEventListener('message', async function handleMessage(event) {
@@ -759,7 +777,7 @@
             });
             const data = await response.json();
             localStorage.setItem('handle', data.handle)
-            showGreeting()
+            activateForHandle(data.handle)
         } catch (error) {
             console.error('Error getting session:', error);
         }
