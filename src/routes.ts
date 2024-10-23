@@ -47,17 +47,22 @@ export const createRoutes = (cfg: HackConfig) => {
       res.sendStatus(400)
       return
     }
-    const validatedToken = await verifyJwt(jwt, 'did:web:dholms.com', null, (iss: string) => {
-      return idResolver.did.resolveAtprotoKey(iss)
-    })
-    const did = validatedToken.iss
-    const profRes = await agent.app.bsky.actor.getProfile({ actor: did })
-    const handle = profRes.data.handle
-    const session = await getSession(req, res)
-    session.did = did
-    session.handle = handle
-    await session.save()
-    res.send({ did, handle })
+    try {
+      const validatedToken = await verifyJwt(jwt, 'did:web:dholms.com', null, (iss: string) => {
+        return idResolver.did.resolveAtprotoKey(iss)
+      })
+      const did = validatedToken.iss
+      const profRes = await agent.app.bsky.actor.getProfile({ actor: did })
+      const handle = profRes.data.handle
+      const session = await getSession(req, res)
+      session.did = did
+      session.handle = handle
+      await session.save()
+      res.send({ did, handle })
+    }catch(err) {
+      console.error('failed to parse token')
+      res.sendStatus(500)
+    }
   })
 
   router.post('/image', async (req, res) => {
